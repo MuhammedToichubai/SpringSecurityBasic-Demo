@@ -1,4 +1,4 @@
-package peaksoft.springsecuritybasicdemo.apis;
+package peaksoft.springsecuritybasicdemo.dto;
 
 import peaksoft.springsecuritybasicdemo.model.Role;
 

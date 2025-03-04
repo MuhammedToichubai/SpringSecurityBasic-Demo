@@ -1,4 +1,10 @@
 package peaksoft.springsecuritybasicdemo.repositories;
 
-public interface UserRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+import peaksoft.springsecuritybasicdemo.model.User;
+
+import java.util.Optional;
+
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByEmail(String email);
 }

@@ -1,4 +1,4 @@
-package peaksoft.springsecuritybasicdemo.apis;
+package peaksoft.springsecuritybasicdemo.dto;
 
-public record LoginRequest() {
+public record LoginRequest(String email, String password) {
 }
