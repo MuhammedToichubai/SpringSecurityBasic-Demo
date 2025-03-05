@@ -7,6 +7,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -29,12 +31,16 @@ public class SpringSecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorize -> {
             authorize
+                    .requestMatchers(
+                            "/api/auth/sign-in",
+                            "/api/auth/sign-up")
+                    .permitAll()
                     .anyRequest()
-                    .permitAll();
+                    .authenticated();
         });
-//        http.csrf(AbstractHttpConfigurer::disable);
-        http.cors(AbstractHttpConfigurer::disable);
-//        http.formLogin(Customizer.withDefaults());
+        http.csrf(AbstractHttpConfigurer::disable);
+        http.httpBasic(Customizer.withDefaults());
+
         return http.build();
     }
 

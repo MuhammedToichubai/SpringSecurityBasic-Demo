@@ -1,10 +1,8 @@
 package peaksoft.springsecuritybasicdemo.apis;
 
-import jakarta.annotation.security.PermitAll;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import peaksoft.springsecuritybasicdemo.model.User;
 import peaksoft.springsecuritybasicdemo.service.UserService;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -24,13 +21,13 @@ import java.util.Optional;
 public class UserAPI {
     private final UserService userservice;
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'INSTRUCTOR', 'STUDENT')")
     @GetMapping
     public ResponseEntity<List<User>> getUsers() {
         return ResponseEntity.ok(userservice.findAll());
     }
 
-    @Secured("ADMIN")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getUser(@PathVariable Long id) {
         Optional<User> user = userservice.findById(id);
