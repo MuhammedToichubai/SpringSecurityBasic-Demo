@@ -1,5 +1,6 @@
 package peaksoft.springsecuritybasicdemo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +21,7 @@ public class User implements UserDetails {
     private Long id;
     @Column(unique = true)
     private String email;
+    @JsonIgnore
     private String password;
     private String name;
     @Enumerated(EnumType.STRING)

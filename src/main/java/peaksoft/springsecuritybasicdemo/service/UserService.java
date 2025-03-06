@@ -1,25 +1,37 @@
 package peaksoft.springsecuritybasicdemo.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import peaksoft.springsecuritybasicdemo.dto.PaginationResponse;
+import peaksoft.springsecuritybasicdemo.dto.UserResponse;
 import peaksoft.springsecuritybasicdemo.exceptions.ForbiddenException;
 import peaksoft.springsecuritybasicdemo.model.Role;
 import peaksoft.springsecuritybasicdemo.model.User;
 import peaksoft.springsecuritybasicdemo.repositories.UserRepository;
 
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
 
-    public List<User> findAll() {
-        return userRepository.findAll();
+    public PaginationResponse<UserResponse> findAll(int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber-1, pageSize);
+
+        Page<User> users = userRepository.findAll(pageable);
+
+        var response = new PaginationResponse<UserResponse>();
+        response.setPageNumber(users.getNumber()+1);
+        response.setPageSize(users.getSize());
+        response.setTotalPages(users.getTotalPages());
+        response.setTotalElements(users.getTotalElements());
+        response.setObjects(UserResponse.entitiesToDto(users.stream().toList()));
+        return response;
     }
 
     public User findById(Long id) {
