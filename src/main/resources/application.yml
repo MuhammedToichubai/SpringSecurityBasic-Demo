@@ -8,7 +8,9 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-
+  security:
+    jwt:
+      secret_key: java16mukhammedurmatpeaksoft
 server:
   port: 9090
   error:

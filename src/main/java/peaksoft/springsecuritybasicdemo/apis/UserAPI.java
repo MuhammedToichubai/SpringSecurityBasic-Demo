@@ -3,12 +3,11 @@ package peaksoft.springsecuritybasicdemo.apis;
 import jakarta.annotation.security.PermitAll;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import peaksoft.springsecuritybasicdemo.dto.PaginationResponse;
 import peaksoft.springsecuritybasicdemo.model.User;
 import peaksoft.springsecuritybasicdemo.service.UserService;
-
-import java.util.List;
 
 
 @RestController
@@ -17,6 +16,7 @@ import java.util.List;
 public class UserAPI {
     private final UserService userservice;
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping
     public ResponseEntity<PaginationResponse<?>> getUsers(@RequestParam(defaultValue = "1") int pageNumber,
                                                           @RequestParam(defaultValue = "3") int pageSize) {

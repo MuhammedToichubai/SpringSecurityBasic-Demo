@@ -10,6 +10,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import peaksoft.springsecuritybasicdemo.config.jwt.JwtService;
+import peaksoft.springsecuritybasicdemo.dto.AuthResponse;
 import peaksoft.springsecuritybasicdemo.dto.LoginRequest;
 import peaksoft.springsecuritybasicdemo.dto.RegisterRequest;
 import peaksoft.springsecuritybasicdemo.model.Role;
@@ -24,6 +26,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
     public ResponseEntity<?> registration(RegisterRequest request) {
         User user = new User();
@@ -32,14 +35,21 @@ public class AuthService {
         user.setName(request.name());
         String encodePassword = passwordEncoder.encode(request.password());
         user.setPassword(encodePassword);
-//        user.setRole(Role.USER);
         try {
             User userByEmail = userRepository.findByEmail(request.email()).orElse(null);
             if (userByEmail != null) {
                 throw  new BadCredentialsException("Email already in use");
             }
+            User savedUser = userRepository.save(user);
+            String generatedToken = jwtService.generateToken(savedUser);
 
-            return ResponseEntity.ok(userRepository.save(user));
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(AuthResponse.builder()
+                            .token(generatedToken)
+                            .email(savedUser.getEmail())
+                            .role(savedUser.getRole())
+                            .build());
+
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                     .body(Map.of("message", e.getMessage()));
@@ -54,7 +64,7 @@ public class AuthService {
                             request.password())
 
             );
-            System.out.println("authenticate.getName() = " + authenticate.getName());
+
 
             User user = userRepository.findByEmail(request.email())
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -64,7 +74,12 @@ public class AuthService {
             if (!matches) {
                 throw new BadCredentialsException("Incorrect password");
             }
-            return ResponseEntity.ok(Map.of("message", "Welcome " + user.getName()));
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(AuthResponse.builder()
+                            .token(jwtService.generateToken(user))
+                            .email(user.getEmail())
+                            .role(user.getRole())
+                            .build());
 
         }catch (BadCredentialsException | UsernameNotFoundException e) {
             return ResponseEntity

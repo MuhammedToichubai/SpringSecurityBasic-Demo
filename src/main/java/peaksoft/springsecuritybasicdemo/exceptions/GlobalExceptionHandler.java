@@ -1,6 +1,8 @@
 package peaksoft.springsecuritybasicdemo.exceptions;
 
+import jakarta.servlet.ServletException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -54,6 +56,15 @@ public class GlobalExceptionHandler {
     }
 
     // 500
+    @ExceptionHandler(value = BadCredentialsException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ExceptionResponse handleServletException(ServletException e) {
+        return ExceptionResponse.builder()
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .message(e.getMessage())
+                .className(e.getClass().getSimpleName())
+                .build();
+    }
 
 
 }
